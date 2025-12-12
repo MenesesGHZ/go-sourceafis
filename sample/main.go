@@ -2,65 +2,60 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"runtime"
 	"time"
 
+	sourceafis "github.com/miqdadyyy/go-sourceafis"
 	"github.com/miqdadyyy/go-sourceafis/config"
+	"github.com/miqdadyyy/go-sourceafis/templates"
 
 	"log"
 )
 
-type TransparencyContents struct {
-}
-
-func (c *TransparencyContents) Accepts(key string) bool {
-	return true
-}
-
-func (c *TransparencyContents) Accept(key, mime string, data []byte) error {
-	//fmt.Printf("%d B  %s %s \n", len(data), mime, key)
-	return nil
-}
-
 func main() {
-	now := time.Now()
 	config.LoadDefaultConfig()
 	config.Config.Workers = runtime.NumCPU()
-	probeImg, err := sourceafis.LoadImage("probe.png")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	l := sourceafis.NewTransparencyLogger(new(TransparencyContents))
+	l := sourceafis.NewTransparencyLogger(new(sourceafis.DefaultTransparency))
 	tc := sourceafis.NewTemplateCreator(l)
-	probe, err := tc.Template(probeImg)
+
+	geras, err := LoadImageTemplates(tc, "gera/gera1.png", "gera/gera2.png", "gera/gera3.png", "gera/gera4.png", "gera/gera5.pgm")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	candidateImg, err := sourceafis.LoadImage("matching.png")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	candidate, err := tc.Template(candidateImg)
+	richis, err := LoadImageTemplates(tc, "richi/richi1.png", "richi/richi2.png", "richi/richi3.png", "richi/richi4.png")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	candidateImg2, err := sourceafis.LoadImage("nonmatching.png")
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	candidate2, err := tc.Template(candidateImg2)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	matcher := sourceafis.NewMatcher(l)
 
-	matcher, err := sourceafis.NewMatcher(l, probe)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+	matcher.Update(1, geras[:3]...) // 1, 2, 3
+	matcher.Update(2, richis[:3]...)
+
 	ctx := context.Background()
-	fmt.Println("matching score ===> ", matcher.Match(ctx, candidate))
-	fmt.Println("non-matching score ===> ", matcher.Match(ctx, candidate2))
-	fmt.Println("elapsed: ", time.Since(now))
+	now := time.Now()
+	id, err := matcher.FindMatch(ctx, geras[4]) // 4
+	elapsed := time.Since(now)
+
+	if err != nil {
+		log.Fatalf("No match found: %s", err.Error())
+	} else {
+		log.Printf("Match found: ID=%d (in %s)", id, elapsed)
+	}
+}
+
+func LoadImageTemplates(tc *sourceafis.TemplateCreator, paths ...string) ([]*templates.SearchTemplate, error) {
+	tmpls := make([]*templates.SearchTemplate, 0, len(paths))
+	for _, path := range paths {
+		img, err := sourceafis.LoadImage(path)
+		if err != nil {
+			return nil, err
+		}
+		tmpl, err := tc.Template(img)
+		if err != nil {
+			return nil, err
+		}
+		tmpls = append(tmpls, tmpl)
+	}
+	return tmpls, nil
 }

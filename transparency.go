@@ -20,13 +20,22 @@ type DefaultTransparencyLogger struct {
 	spi Transparency
 }
 
+type DefaultTransparency struct{}
+
+func (c *DefaultTransparency) Accepts(key string) bool {
+	return true
+}
+
+func (c *DefaultTransparency) Accept(key, mime string, data []byte) error {
+	return nil
+}
+
 func NewTransparencyLogger(taker Transparency) *DefaultTransparencyLogger {
 	return &DefaultTransparencyLogger{
 		spi: taker,
 	}
 }
 func (t *DefaultTransparencyLogger) log(key, mime string, supplier func() ([]byte, error)) error {
-	// t.logVersion(); dont version this yet
 	if t.spi.Accepts(key) {
 		data, err := supplier()
 		if err != nil {
