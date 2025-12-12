@@ -1,7 +1,7 @@
 package features
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/primitives"
 )
 
 type SkeletonType int

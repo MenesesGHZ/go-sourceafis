@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 type TransparencyLogger interface {

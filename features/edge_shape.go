@@ -4,8 +4,8 @@ import (
 	"math"
 	"math/bits"
 
-	"github.com/miqdadyyy/go-sourceafis/primitives"
-	"github.com/miqdadyyy/go-sourceafis/utils"
+	"github.com/menesesghz/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/utils"
 )
 
 const (

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"runtime"
 
-	"github.com/miqdadyyy/go-sourceafis/matcher"
-	"github.com/miqdadyyy/go-sourceafis/templates"
+	"github.com/menesesghz/go-sourceafis/matcher"
+	"github.com/menesesghz/go-sourceafis/templates"
 )
 
 var (

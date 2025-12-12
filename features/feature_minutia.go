@@ -1,6 +1,6 @@
 package features
 
-import "github.com/miqdadyyy/go-sourceafis/primitives"
+import "github.com/menesesghz/go-sourceafis/primitives"
 
 type FeatureMinutia struct {
 	Position  primitives.IntPoint

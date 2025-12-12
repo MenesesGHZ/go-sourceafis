@@ -1,13 +1,13 @@
 package filters
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/extractor/logger"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/dot"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/fragment"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/gap"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/pore"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/tail"
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/extractor/logger"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/dot"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/fragment"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/gap"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/pore"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/tail"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 type SkeletonFilters struct {

@@ -3,8 +3,8 @@ package vote
 import (
 	"math"
 
-	"github.com/miqdadyyy/go-sourceafis/primitives"
-	"github.com/miqdadyyy/go-sourceafis/utils"
+	"github.com/menesesghz/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/utils"
 )
 
 func Apply(input, mask *primitives.BooleanMatrix, radius int, majority float64, borderDistance int) *primitives.BooleanMatrix {

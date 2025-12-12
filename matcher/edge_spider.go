@@ -3,8 +3,8 @@ package matcher
 import (
 	"container/heap"
 
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 func Crawl(pedges, cedges [][]*features.NeighborEdge, pairing *PairingGraph, root *MinutiaPair, queue *PriorityQueue) {

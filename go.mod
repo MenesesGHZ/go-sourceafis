@@ -1,4 +1,4 @@
-module github.com/miqdadyyy/go-sourceafis
+module github.com/menesesghz/go-sourceafis
 
 go 1.21.5
 

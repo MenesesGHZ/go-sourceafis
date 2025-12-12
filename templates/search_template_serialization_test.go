@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 func TestSearchTemplateSerializationRoundtrip(t *testing.T) {

@@ -1,13 +1,13 @@
 package segmentation
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/extractor/filter/vote"
-	"github.com/miqdadyyy/go-sourceafis/extractor/logger"
-	"github.com/miqdadyyy/go-sourceafis/extractor/mask/absolute"
-	"github.com/miqdadyyy/go-sourceafis/extractor/mask/clipped"
-	"github.com/miqdadyyy/go-sourceafis/extractor/mask/relative"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/extractor/filter/vote"
+	"github.com/menesesghz/go-sourceafis/extractor/logger"
+	"github.com/menesesghz/go-sourceafis/extractor/mask/absolute"
+	"github.com/menesesghz/go-sourceafis/extractor/mask/clipped"
+	"github.com/menesesghz/go-sourceafis/extractor/mask/relative"
+	"github.com/menesesghz/go-sourceafis/primitives"
 )
 
 type SegmentationMask struct {

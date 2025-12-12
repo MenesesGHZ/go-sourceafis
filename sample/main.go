@@ -5,9 +5,9 @@ import (
 	"runtime"
 	"time"
 
-	sourceafis "github.com/miqdadyyy/go-sourceafis"
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/templates"
+	sourceafis "github.com/menesesghz/go-sourceafis"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/templates"
 
 	"log"
 )

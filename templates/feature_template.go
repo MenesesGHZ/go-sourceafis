@@ -1,8 +1,8 @@
 package templates
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/primitives"
 )
 
 type FeatureTemplate struct {

@@ -3,9 +3,9 @@ package top
 import (
 	"sort"
 
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/primitives"
 )
 
 func Apply(minutiae *primitives.GenericList[*features.FeatureMinutia]) *primitives.GenericList[*features.FeatureMinutia] {

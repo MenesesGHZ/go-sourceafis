@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/matcher"
-	"github.com/miqdadyyy/go-sourceafis/transparency"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/matcher"
+	"github.com/menesesghz/go-sourceafis/transparency"
 
 	"github.com/fxamacker/cbor/v2"
 )

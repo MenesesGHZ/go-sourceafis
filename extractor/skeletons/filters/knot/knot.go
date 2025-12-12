@@ -1,8 +1,8 @@
 package knot
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/dot"
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/dot"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 func Apply(skeleton *features.Skeleton) error {

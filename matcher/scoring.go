@@ -3,9 +3,9 @@ package matcher
 import (
 	"math"
 
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/templates"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/templates"
 )
 
 func Compute(probe, candidate *templates.SearchTemplate, pairing *PairingGraph, score *ScoringData) {

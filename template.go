@@ -1,10 +1,10 @@
 package sourceafis
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/extractor"
-	"github.com/miqdadyyy/go-sourceafis/extractor/logger"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
-	"github.com/miqdadyyy/go-sourceafis/templates"
+	"github.com/menesesghz/go-sourceafis/extractor"
+	"github.com/menesesghz/go-sourceafis/extractor/logger"
+	"github.com/menesesghz/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/templates"
 )
 
 type Extractor interface {

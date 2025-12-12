@@ -1,10 +1,10 @@
 package cloud
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
-	"github.com/miqdadyyy/go-sourceafis/utils"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/utils"
 )
 
 func Apply(minutiae *primitives.GenericList[*features.FeatureMinutia]) {

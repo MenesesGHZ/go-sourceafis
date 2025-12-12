@@ -3,12 +3,12 @@ package gap
 import (
 	"container/heap"
 
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/extractor/logger"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/knot"
-	"github.com/miqdadyyy/go-sourceafis/features"
-	"github.com/miqdadyyy/go-sourceafis/primitives"
-	"github.com/miqdadyyy/go-sourceafis/utils"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/extractor/logger"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/knot"
+	"github.com/menesesghz/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/primitives"
+	"github.com/menesesghz/go-sourceafis/utils"
 )
 
 type SkeletonGap struct {

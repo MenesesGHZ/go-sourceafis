@@ -1,7 +1,7 @@
 package matcher
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/config"
 
 	"github.com/emirpasic/gods/sets/hashset"
 )

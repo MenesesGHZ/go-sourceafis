@@ -1,10 +1,10 @@
 package pore
 
 import (
-	"github.com/miqdadyyy/go-sourceafis/config"
-	"github.com/miqdadyyy/go-sourceafis/extractor/logger"
-	"github.com/miqdadyyy/go-sourceafis/extractor/skeletons/filters/knot"
-	"github.com/miqdadyyy/go-sourceafis/features"
+	"github.com/menesesghz/go-sourceafis/config"
+	"github.com/menesesghz/go-sourceafis/extractor/logger"
+	"github.com/menesesghz/go-sourceafis/extractor/skeletons/filters/knot"
+	"github.com/menesesghz/go-sourceafis/features"
 )
 
 type SkeletonPoreFilter struct {
