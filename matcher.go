@@ -19,7 +19,7 @@ const (
 )
 
 type Matcher struct {
-	fingerprintMap map[int][]*templates.SearchTemplate
+	fingerprintMap map[string]map[int][]*templates.SearchTemplate
 	logger         matcher.MatcherLogger
 	matcher        *matcher.Matcher
 }
@@ -27,12 +27,17 @@ type Matcher struct {
 func NewMatcher(logger matcher.MatcherLogger) *Matcher {
 	return &Matcher{
 		matcher:        matcher.NewMatcher(logger),
-		fingerprintMap: make(map[int][]*templates.SearchTemplate),
+		fingerprintMap: make(map[string]map[int][]*templates.SearchTemplate),
 		logger:         logger,
 	}
 }
 
-func (m *Matcher) FindMatch(ctx context.Context, candidate *templates.SearchTemplate) (int, error) {
+func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *templates.SearchTemplate) (int, error) {
+	templatesMap, exists := m.fingerprintMap[namespace]
+	if !exists || len(templatesMap) == 0 {
+		return 0, ErrNoMatchFound
+	}
+
 	// Build hash
 	hashBuilder := matcher.NewEdgeHashBuilder(m.logger.(matcher.HashTableLogger))
 	hash, err := hashBuilder.Build(candidate)
@@ -82,7 +87,7 @@ func (m *Matcher) FindMatch(ctx context.Context, candidate *templates.SearchTemp
 
 	// Feed jobs
 	go func() {
-		for id, list := range m.fingerprintMap {
+		for id, list := range m.fingerprintMap[namespace] {
 			select {
 			case <-ctx.Done():
 				close(jobs)
@@ -96,8 +101,7 @@ func (m *Matcher) FindMatch(ctx context.Context, candidate *templates.SearchTemp
 	// Collect results
 	maxID := 0
 	maxScore := -1.0
-
-	for i := 0; i < len(m.fingerprintMap); i++ {
+	for i := 0; i < len(m.fingerprintMap[namespace]); i++ {
 		select {
 		case <-ctx.Done():
 			return 0, ctx.Err()
@@ -116,10 +120,13 @@ func (m *Matcher) FindMatch(ctx context.Context, candidate *templates.SearchTemp
 	return maxID, nil
 }
 
-func (m *Matcher) Update(id int, templates ...*templates.SearchTemplate) {
-	if len(templates) == 0 {
-		delete(m.fingerprintMap, id)
+func (m *Matcher) Update(id int, namespace string, ts ...*templates.SearchTemplate) {
+	if len(ts) == 0 {
+		delete(m.fingerprintMap[namespace], id)
 	} else {
-		m.fingerprintMap[id] = templates
+		if _, exists := m.fingerprintMap[namespace]; !exists {
+			m.fingerprintMap[namespace] = make(map[int][]*templates.SearchTemplate)
+		}
+		m.fingerprintMap[namespace][id] = ts
 	}
 }

@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
+	"log"
 	"runtime"
 	"time"
 
 	sourceafis "github.com/menesesghz/go-sourceafis"
 	"github.com/menesesghz/go-sourceafis/config"
 	"github.com/menesesghz/go-sourceafis/templates"
-
-	"log"
 )
 
 func main() {
@@ -18,7 +17,7 @@ func main() {
 	l := sourceafis.NewTransparencyLogger(new(sourceafis.DefaultTransparency))
 	tc := sourceafis.NewTemplateCreator(l)
 
-	geras, err := LoadImageTemplates(tc, "gera/gera1.png", "gera/gera2.png", "gera/gera3.png", "gera/gera4.png", "gera/gera5.pgm")
+	geras, err := LoadImageTemplates(tc, "gera/gera1.png", "gera/gera2.png", "gera/gera3.png", "gera/gera4.png")
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -29,14 +28,14 @@ func main() {
 
 	matcher := sourceafis.NewMatcher(l)
 
-	matcher.Update(1, geras[:3]...) // 1, 2, 3
-	matcher.Update(2, richis[:3]...)
+	const namespace = "group-1"
+	matcher.Update(1, namespace, geras[:3]...) // 1, 2, 3
+	matcher.Update(2, namespace, richis[:3]...)
 
 	ctx := context.Background()
 	now := time.Now()
-	id, err := matcher.FindMatch(ctx, geras[4]) // 4
+	id, err := matcher.FindMatch(ctx, namespace, geras[3]) // 4
 	elapsed := time.Since(now)
-
 	if err != nil {
 		log.Fatalf("No match found: %s", err.Error())
 	} else {
