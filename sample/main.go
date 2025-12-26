@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	matcher := sourceafis.NewMatcher(l)
+	matcher := sourceafis.NewMatcher(l, sourceafis.DefaultMatchThreshold)
 
 	const namespace = "group-1"
 	matcher.Update(1, namespace, geras[:3]...) // 1, 2, 3

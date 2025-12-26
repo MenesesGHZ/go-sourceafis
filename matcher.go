@@ -22,13 +22,18 @@ type Matcher struct {
 	fingerprintMap map[string]map[int][]*templates.SearchTemplate
 	logger         matcher.MatcherLogger
 	matcher        *matcher.Matcher
+	scoreThreshold float64
 }
 
-func NewMatcher(logger matcher.MatcherLogger) *Matcher {
+func NewMatcher(logger matcher.MatcherLogger, scoreThreshold float64) *Matcher {
+	if scoreThreshold <= 0 {
+		scoreThreshold = DefaultMatchThreshold
+	}
 	return &Matcher{
 		matcher:        matcher.NewMatcher(logger),
 		fingerprintMap: make(map[string]map[int][]*templates.SearchTemplate),
 		logger:         logger,
+		scoreThreshold: scoreThreshold,
 	}
 }
 
@@ -113,7 +118,7 @@ func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *te
 		}
 	}
 
-	if maxScore < DefaultMatchThreshold {
+	if maxScore < m.scoreThreshold {
 		return 0, maxScore, ErrNoMatchFound
 	}
 
