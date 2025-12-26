@@ -15,7 +15,7 @@ var (
 
 const (
 	// DefaultMatchThreshold is the default threshold for fingerprint matching, any score above this value is considered a match.
-	DefaultMatchThreshold = 40.0
+	DefaultMatchThreshold = 25.0
 )
 
 type Matcher struct {
@@ -32,17 +32,17 @@ func NewMatcher(logger matcher.MatcherLogger) *Matcher {
 	}
 }
 
-func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *templates.SearchTemplate) (int, error) {
+func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *templates.SearchTemplate) (int, float64, error) {
 	templatesMap, exists := m.fingerprintMap[namespace]
 	if !exists || len(templatesMap) == 0 {
-		return 0, ErrNoMatchFound
+		return 0, 0, ErrNoMatchFound
 	}
 
 	// Build hash
 	hashBuilder := matcher.NewEdgeHashBuilder(m.logger.(matcher.HashTableLogger))
 	hash, err := hashBuilder.Build(candidate)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	candidateProbe := matcher.NewProbe(candidate, hash)
 
@@ -104,7 +104,7 @@ func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *te
 	for i := 0; i < len(m.fingerprintMap[namespace]); i++ {
 		select {
 		case <-ctx.Done():
-			return 0, ctx.Err()
+			return 0, 0, ctx.Err()
 		case r := <-results:
 			if r.score > maxScore {
 				maxScore = r.score
@@ -114,10 +114,10 @@ func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *te
 	}
 
 	if maxScore < DefaultMatchThreshold {
-		return 0, ErrNoMatchFound
+		return 0, maxScore, ErrNoMatchFound
 	}
 
-	return maxID, nil
+	return maxID, maxScore, nil
 }
 
 func (m *Matcher) Update(id int, namespace string, ts ...*templates.SearchTemplate) {

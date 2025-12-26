@@ -34,12 +34,12 @@ func main() {
 
 	ctx := context.Background()
 	now := time.Now()
-	id, err := matcher.FindMatch(ctx, namespace, geras[3]) // 4
+	id, score, err := matcher.FindMatch(ctx, namespace, geras[3]) // 4
 	elapsed := time.Since(now)
 	if err != nil {
 		log.Fatalf("No match found: %s", err.Error())
 	} else {
-		log.Printf("Match found: ID=%d (in %s)", id, elapsed)
+		log.Printf("Match found: ID=%d, Score=%.2f (in %s)", id, score, elapsed)
 	}
 }
 
