@@ -98,3 +98,20 @@ func (t *DefaultTransparencyLogger) LogBestMatch(nth int) error {
 	t.spi.Accept("best-match", "text/plain", []byte(fmt.Sprintf("%d", nth)))
 	return nil
 }
+
+// NoopTransparencyLogger satisfies every logger the extractor and the matcher
+// take, and does nothing. Use it unless you are inspecting the algorithm:
+// DefaultTransparencyLogger builds and CBOR-encodes every intermediate image,
+// pairing and score before its Transparency gets to decline it, which roughly
+// doubles the cost of both extraction and matching.
+type NoopTransparencyLogger struct{}
+
+func (NoopTransparencyLogger) Log(string, interface{}) error                     { return nil }
+func (NoopTransparencyLogger) LogSkeleton(string, *features.Skeleton) error      { return nil }
+func (NoopTransparencyLogger) LogRootPairs(int, []*matcher.MinutiaPair) error    { return nil }
+func (NoopTransparencyLogger) LogPairing(*matcher.PairingGraph) error            { return nil }
+func (NoopTransparencyLogger) LogBestPairing(*matcher.PairingGraph) error        { return nil }
+func (NoopTransparencyLogger) LogScore(*matcher.ScoringData) error               { return nil }
+func (NoopTransparencyLogger) LogBestScore(*matcher.ScoringData) error           { return nil }
+func (NoopTransparencyLogger) LogEdgeHash(map[int][]*features.IndexedEdge) error { return nil }
+func (NoopTransparencyLogger) LogBestMatch(int) error                            { return nil }

@@ -21,12 +21,18 @@ func Enumerate(probe *Probe, candidate *templates.SearchTemplate, roots *RootLis
 						if matches != nil {
 							for _, match := range matches {
 								if Matching(match, cedge) {
+									// A root seen before would crawl to exactly the same
+									// pairing and score, so it is not tried again. It still
+									// counts toward MaxTriedRoots, as in SourceAFIS, which
+									// keeps the set of distinct roots (and so the score)
+									// unchanged.
 									duplicateKey := (match.Reference() << 16) | creference
-									roots.duplicates.Add(duplicateKey)
-									pair := roots.pool.Allocate()
-									pair.Probe = match.Reference()
-									pair.Candidate = creference
-									roots.Add(pair)
+									if roots.MarkSeen(duplicateKey) {
+										pair := roots.pool.Allocate()
+										pair.Probe = match.Reference()
+										pair.Candidate = creference
+										roots.Add(pair)
+									}
 
 									tried++
 									if tried >= config.Config.MaxTriedRoots {

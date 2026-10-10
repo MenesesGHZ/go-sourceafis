@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"runtime"
+	"sync"
+	"sync/atomic"
 
 	"github.com/menesesghz/go-sourceafis/matcher"
 	"github.com/menesesghz/go-sourceafis/templates"
@@ -18,7 +20,10 @@ const (
 	DefaultMatchThreshold = 25.0
 )
 
+// Matcher is safe for concurrent use: FindMatch may run while Update changes
+// the gallery.
 type Matcher struct {
+	mu             sync.RWMutex
 	fingerprintMap map[string]map[int][]*templates.SearchTemplate
 	logger         matcher.MatcherLogger
 	matcher        *matcher.Matcher
@@ -37,9 +42,27 @@ func NewMatcher(logger matcher.MatcherLogger, scoreThreshold float64) *Matcher {
 	}
 }
 
+type galleryEntry struct {
+	id        int
+	templates []*templates.SearchTemplate
+}
+
+// snapshot copies the namespace's entries under the read lock, so a search
+// never holds the lock while it matches and an Update never waits for one.
+// Templates are never mutated after Update, so sharing them is safe.
+func (m *Matcher) snapshot(namespace string) []galleryEntry {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	entries := make([]galleryEntry, 0, len(m.fingerprintMap[namespace]))
+	for id, list := range m.fingerprintMap[namespace] {
+		entries = append(entries, galleryEntry{id: id, templates: list})
+	}
+	return entries
+}
+
 func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *templates.SearchTemplate) (int, float64, error) {
-	templatesMap, exists := m.fingerprintMap[namespace]
-	if !exists || len(templatesMap) == 0 {
+	entries := m.snapshot(namespace)
+	if len(entries) == 0 {
 		return 0, 0, ErrNoMatchFound
 	}
 
@@ -51,71 +74,52 @@ func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *te
 	}
 	candidateProbe := matcher.NewProbe(candidate, hash)
 
-	type job struct {
-		id        int
-		templates []*templates.SearchTemplate
-	}
-
 	type result struct {
 		id    int
 		score float64
 	}
 
-	workerCount := runtime.NumCPU()
-	jobs := make(chan job)
-	results := make(chan result)
+	workerCount := min(runtime.NumCPU(), len(entries))
+	// Buffered so a worker never blocks on a caller that already returned.
+	results := make(chan result, workerCount)
+	var next atomic.Int64
 
-	// Worker logic
+	// Each worker claims entries by index and reports only its own best, so the
+	// per-member cost is one atomic add instead of two channel handoffs.
 	worker := func() {
-		for j := range jobs {
-			localMax := -1.0
-			for _, tmpl := range j.templates {
-				select {
-				case <-ctx.Done():
-					return
-				default:
-				}
-
-				score := m.matcher.Match(ctx, candidateProbe, tmpl)
-				if score > localMax {
-					localMax = score
+		ctx := matcher.WithThread(ctx)
+		best := result{score: -1}
+		for {
+			i := int(next.Add(1)) - 1
+			if i >= len(entries) || ctx.Err() != nil {
+				break
+			}
+			e := entries[i]
+			for _, tmpl := range e.templates {
+				if score := m.matcher.Match(ctx, candidateProbe, tmpl); score > best.score {
+					best = result{id: e.id, score: score}
 				}
 			}
-			results <- result{id: j.id, score: localMax}
 		}
+		results <- best
 	}
 
-	// Start workers
 	for i := 0; i < workerCount; i++ {
 		go worker()
 	}
 
-	// Feed jobs
-	go func() {
-		for id, list := range m.fingerprintMap[namespace] {
-			select {
-			case <-ctx.Done():
-				close(jobs)
-				return
-			case jobs <- job{id: id, templates: list}:
-			}
-		}
-		close(jobs)
-	}()
-
-	// Collect results
 	maxID := 0
 	maxScore := -1.0
-	for i := 0; i < len(m.fingerprintMap[namespace]); i++ {
-		select {
-		case <-ctx.Done():
-			return 0, 0, ctx.Err()
-		case r := <-results:
-			if r.score > maxScore {
-				maxScore = r.score
-				maxID = r.id
-			}
+	for i := 0; i < workerCount; i++ {
+		r := <-results
+		// Ties go to the lower id, so the outcome does not depend on scheduling.
+		if r.score > maxScore || (r.score == maxScore && r.id < maxID) {
+			maxScore = r.score
+			maxID = r.id
 		}
+	}
+	if err := ctx.Err(); err != nil {
+		return 0, 0, err
 	}
 
 	if maxScore < m.scoreThreshold {
@@ -126,6 +130,8 @@ func (m *Matcher) FindMatch(ctx context.Context, namespace string, candidate *te
 }
 
 func (m *Matcher) Update(id int, namespace string, ts ...*templates.SearchTemplate) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	if len(ts) == 0 {
 		delete(m.fingerprintMap[namespace], id)
 	} else {

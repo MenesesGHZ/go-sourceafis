@@ -27,7 +27,6 @@ func NewMatcher(logger MatcherLogger) *Matcher {
 
 func (m *Matcher) Match(ctx context.Context, probe *Probe, candidate *templates.SearchTemplate) (high float64) {
 	thread := CurrentThread(ctx)
-	defer ctx.Done()
 
 	thread.Pairing.ReserveProbe(probe)
 	thread.Pairing.ReserveCandidate(candidate)

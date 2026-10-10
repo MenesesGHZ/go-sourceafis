@@ -14,7 +14,7 @@ import (
 func main() {
 	config.LoadDefaultConfig()
 	config.Config.Workers = runtime.NumCPU()
-	l := sourceafis.NewTransparencyLogger(new(sourceafis.DefaultTransparency))
+	l := sourceafis.NoopTransparencyLogger{}
 	tc := sourceafis.NewTemplateCreator(l)
 
 	geras, err := LoadImageTemplates(tc, "gera/gera1.png", "gera/gera2.png", "gera/gera3.png", "gera/gera4.png")

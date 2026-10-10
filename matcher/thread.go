@@ -40,14 +40,23 @@ type MatcherThread struct {
 	Score   *ScoringData
 }
 
+// CurrentThread returns the scratch state bound to ctx by WithThread, or a fresh
+// one when there is none. A fresh one is discarded after the call, so a caller
+// matching many templates should bind one per goroutine with WithThread.
 func CurrentThread(ctx context.Context) *MatcherThread {
 	if thread, ok := ctx.Value(matcherThreadContextKey{}).(*MatcherThread); ok {
 		return thread
 	}
-	return createAndStoreMatcherThread(ctx)
+	return NewMatcherThread()
 }
 
-func createAndStoreMatcherThread(ctx context.Context) *MatcherThread {
+// WithThread binds a reusable MatcherThread to ctx. The thread is not safe for
+// concurrent use: bind one per goroutine.
+func WithThread(ctx context.Context) context.Context {
+	return context.WithValue(ctx, matcherThreadContextKey{}, NewMatcherThread())
+}
+
+func NewMatcherThread() *MatcherThread {
 	pool := NewMinutiaPairPool()
 	thread := &MatcherThread{
 		Roots:   NewRootList(pool),
@@ -56,6 +65,5 @@ func createAndStoreMatcherThread(ctx context.Context) *MatcherThread {
 		Score:   new(ScoringData),
 	}
 	heap.Init(&thread.Queue)
-	ctx = context.WithValue(ctx, matcherThreadContextKey{}, thread)
 	return thread
 }

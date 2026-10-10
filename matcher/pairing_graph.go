@@ -70,6 +70,7 @@ func (g *PairingGraph) Clear() {
 		for _, pair := range g.Support {
 			g.pool.Release(pair)
 		}
-		g.Support = make([]*MinutiaPair, 0)
+		clear(g.Support)
+		g.Support = g.Support[:0]
 	}
 }

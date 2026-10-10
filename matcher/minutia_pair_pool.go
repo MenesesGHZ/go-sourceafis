@@ -22,10 +22,13 @@ func (p *MinutiaPairPool) Allocate() *MinutiaPair {
 	}
 }
 
+// Release returns a pair to the pool. Every allocated pair has exactly one owner
+// (the root list, the pairing tree or its support list) that releases it once.
 func (p *MinutiaPairPool) Release(pair *MinutiaPair) {
 	if p.pooled >= len(p.pool) {
-		p.pool = make([]*MinutiaPair, len(p.pool))
-		p.pool = append(p.pool, p.pool...)
+		grown := make([]*MinutiaPair, 2*len(p.pool))
+		copy(grown, p.pool)
+		p.pool = grown
 	}
 	pair.Probe = 0
 	pair.Candidate = 0
@@ -34,4 +37,5 @@ func (p *MinutiaPairPool) Release(pair *MinutiaPair) {
 	pair.distance = 0
 	pair.supportingEdges = 0
 	p.pool[p.pooled] = pair
+	p.pooled++
 }
